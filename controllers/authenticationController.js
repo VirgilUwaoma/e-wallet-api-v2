@@ -7,6 +7,7 @@ const {
 } = require("../utilities/validation");
 const async = require("async");
 const createError = require("http-errors");
+const { issueToken } = require("../utilities/token");
 
 function registerUser(req, res, next) {
   // Validate data before creating user
@@ -45,7 +46,6 @@ function registerUser(req, res, next) {
           wallet_id: uuidv4(),
         };
         createdNewUser = await User.createUser(newUser, newWallet);
-        console.log(createdNewUser);
         if (createdNewUser) {
           return {
             first_name: req.body.first_name,
@@ -68,7 +68,55 @@ function registerUser(req, res, next) {
   );
 }
 
-async function loginUser(req, res) {}
+async function loginUser(req, res, next) {
+  const { error } = loginUserValidation(req.body);
+  if (error) {
+    const message = error.details[0].message;
+    return res.status(400).json({ message });
+  }
+
+  async.waterfall(
+    [
+      async function () {
+        const user = await User.getByEmail(req.body.email);
+        passwordCorrect = user
+          ? await bcrypt.compare(req.body.password, user.password)
+          : false;
+        if (!passwordCorrect) {
+          throw createError(400, "incorrect email or password");
+        }
+        return user;
+      },
+      async function (user) {
+        const payload = {
+          id: user.id,
+          email: user.email,
+          mobile_number: user.mobile_number,
+        };
+        const token = await issueToken(payload);
+        return { token, user };
+      },
+    ],
+    function (err, result) {
+      if (err) {
+        return next(err);
+      }
+      res.status(200).json({
+        data: {
+          token: result.token,
+          user: {
+            id: result.user.id,
+            first_name: result.user.first_name,
+            last_name: result.user.last_name,
+            email: result.user.email,
+            mobile_number: result.user.mobile_number,
+          },
+        },
+        message: "user logged in",
+      });
+    }
+  );
+}
 
 module.exports = {
   registerUser,

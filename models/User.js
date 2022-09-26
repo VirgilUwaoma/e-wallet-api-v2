@@ -3,12 +3,12 @@ const { v4: uuidv4 } = require("uuid");
 
 const getByEmail = async function (email) {
   const emails = await knex("user").where("email", email);
-  return emails;
+  return emails[0];
 };
 
 const getByMobile = async function (mobile_number) {
   const mobiles = await knex("user").where("mobile_number", mobile_number);
-  return mobiles;
+  return mobiles[0];
 };
 
 const createUser = async function (newUser, newWallet) {
