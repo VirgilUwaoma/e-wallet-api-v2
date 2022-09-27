@@ -22,7 +22,8 @@ function registerUser(req, res, next) {
       async function () {
         emails = await User.getByEmail(req.body.email);
         mobiles = await User.getByEmail(req.body.mobile_number);
-        if (emails.length > 0 || mobiles.lenght > 0) {
+        console.log(emails, mobiles);
+        if (emails || mobiles) {
           throw createError(
             409,
             "user with email or mobile number already exists"

@@ -19,7 +19,16 @@ function loginUserValidation(data) {
   return schema.validate(data);
 }
 
+function fundWalletValidation(data) {
+  const schema = Joi.object({
+    amount: Joi.number().precision(2).positive().required(),
+    // token: Joi.object().required(),
+  });
+  return schema.validate(data);
+}
+
 module.exports = {
   registerUserValidation,
   loginUserValidation,
+  fundWalletValidation,
 };

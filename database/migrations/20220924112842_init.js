@@ -8,14 +8,14 @@ exports.up = function (knex) {
       table.increments().primary();
       table.string("first_name").notNullable();
       table.string("last_name").notNullable();
-      table.string("email").unique().notNullable();
+      table.string("email").unique().notNullable().index();
       table.string("password").notNullable();
-      table.string("mobile_number").unique().notNullable();
+      table.string("mobile_number").unique().notNullable().index();
       table.timestamps(true, true, false);
     })
     .createTable("wallet", function (table) {
       table.increments().primary();
-      table.integer("user_id").unsigned().unique();
+      table.integer("user_id").unsigned().unique().index();
       table.decimal("balance", 9, 2);
       table.uuid("wallet_id").notNullable().unique();
       table
@@ -26,7 +26,7 @@ exports.up = function (knex) {
     })
     .createTable("transaction", function (table) {
       table.increments().primary();
-      table.uuid("transaction_id").unique().notNullable();
+      table.uuid("transaction_id").unique().notNullable().index();
       table.integer("sender_id").unsigned();
       table.integer("receiver_id").unsigned();
       table.decimal("amount", 9, 2).notNullable();

@@ -13,11 +13,11 @@ const limiter = rateLimit({
   legacyHeaders: false,
 });
 const authRoutes = require("./routes/auth");
-// const walletRoutes = require("./routes/wallet");
+const walletRoutes = require("./routes/wallets");
 
 server.use(express.json());
 server.use("/api/auth", authRoutes);
-// server.use("/api/wallet", walletRoutes);
+server.use("/api/wallets", walletRoutes);
 server.use(helmet());
 server.use(limiter);
 
