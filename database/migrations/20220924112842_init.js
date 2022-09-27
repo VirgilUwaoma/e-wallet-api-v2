@@ -16,7 +16,7 @@ exports.up = function (knex) {
     .createTable("wallet", function (table) {
       table.increments().primary();
       table.integer("user_id").unsigned().unique().index();
-      table.decimal("balance", 9, 2);
+      table.decimal("balance", 9, 2).unsigned();
       table.uuid("wallet_id").notNullable().unique();
       table
         .foreign("user_id")

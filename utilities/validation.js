@@ -21,8 +21,7 @@ function loginUserValidation(data) {
 
 function fundWalletValidation(data) {
   const schema = Joi.object({
-    amount: Joi.number().precision(2).positive().required(),
-    // token: Joi.object().required(),
+    amount: Joi.number().min(0).precision(2).positive().required(),
   });
   return schema.validate(data);
 }
