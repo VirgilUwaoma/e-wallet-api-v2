@@ -3,13 +3,17 @@ const { v4: uuidv4 } = require("uuid");
 const createError = require("http-errors");
 const Wallet = require("../models/Wallet");
 const Transaction = require("../Models/Transaction");
-const { fundWalletValidation } = require("../utilities/validation");
+const {
+  debitValidation,
+  creditValidation,
+  transferValidation,
+} = require("../utilities/validation");
 
 function fundWallet(req, res, next) {
   async.waterfall(
     [
       function (callback) {
-        const { error } = fundWalletValidation(req.body);
+        const { error } = creditValidation(req.body);
         if (error) {
           const message = error.details[0].message;
           throw createError(400, `${message}`);
@@ -18,9 +22,7 @@ function fundWallet(req, res, next) {
       },
       async function () {
         const wallet = await Wallet.getWalletByUserId(req.token.id);
-        if (!wallet) {
-          throw createError(409, "user wallet not found");
-        }
+        if (!wallet) throw createError(409, "user wallet not found");
       },
       async function () {
         const transactionId = uuidv4();
@@ -53,7 +55,7 @@ function fundWallet(req, res, next) {
       }
       return res
         .status(200)
-        .json({ data: result, message: "wallet funded sucessfully" });
+        .json({ data: result, message: "wallet funded successfully" });
     }
   );
 }
@@ -62,7 +64,7 @@ function debitWallet(req, res, next) {
   async.waterfall(
     [
       function (callback) {
-        const { error } = fundWalletValidation(req.body);
+        const { error } = debitValidation(req.body);
         if (error) {
           const message = error.details[0].message;
           throw createError(400, `${message}`);
@@ -109,7 +111,69 @@ function debitWallet(req, res, next) {
       }
       return res
         .status(200)
-        .json({ data: result, message: "wallet debited sucessfully" });
+        .json({ data: result, message: "wallet debited successfully" });
+    }
+  );
+}
+
+function transfer(req, res, next) {
+  async.waterfall(
+    [
+      function (callback) {
+        const { error } = transferValidation(req.body);
+        if (error) {
+          const message = error.details[0].message;
+          throw createError(400, `${message}`);
+        }
+        callback();
+      },
+      async function () {
+        const sender = await Wallet.getWalletByUserId(req.token.id);
+        const receiver = await Wallet.getWalletByMobile(req.body.receiver);
+        if (!sender) {
+          throw createError(409, "user wallet not found");
+        }
+        if (!receiver)
+          throw createError(
+            400,
+            "receiver with that mobile number doesn't exist"
+          );
+        if (sender.id === receiver.id)
+          throw createError(400, "cannot transfer to your own wallet");
+        if (sender.balance < req.body.amount)
+          throw createError(409, "insufficient wallet balance for transaction");
+        return receiver;
+      },
+      async function (receiver) {
+        const transactionId = uuidv4();
+        const transaction = {
+          transaction_id: transactionId,
+          sender_id: req.token.id,
+          receiver_id: receiver.id,
+          amount: req.body.amount,
+          transaction_type: "Transfer",
+          successful: true,
+        };
+        const newTransfer = await Transaction.transferTrx(transaction);
+        if (!newTransfer)
+          throw createError(
+            500,
+            "transaction couldn't be completed. try again"
+          );
+        return {
+          transaction_id: transactionId,
+          amount: transaction.amount,
+          receiver: receiver.mobile_number,
+        };
+      },
+    ],
+    function (err, result) {
+      if (err) {
+        return next(err);
+      }
+      return res
+        .status(200)
+        .json({ data: result, message: "transfer successful" });
     }
   );
 }
@@ -117,4 +181,5 @@ function debitWallet(req, res, next) {
 module.exports = {
   fundWallet,
   debitWallet,
+  transfer,
 };

@@ -35,6 +35,7 @@ function registerUser(req, res, next) {
         return hashedPassword;
       },
       async function (hashedPassword) {
+        console.log(hashedPassword);
         const newUser = {
           first_name: req.body.first_name,
           last_name: req.body.last_name,

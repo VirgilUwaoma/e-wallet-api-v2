@@ -3,6 +3,8 @@
  * @returns { Promise<void> }
  */
 const { v4: uuidv4 } = require("uuid");
+const bcrypt = require("bcrypt");
+
 exports.seed = async function (knex) {
   await knex.raw("SET FOREIGN_KEY_CHECKS = 0");
   await knex.raw("TRUNCATE TABLE user");
@@ -15,7 +17,7 @@ exports.seed = async function (knex) {
       first_name: "user1",
       last_name: "test",
       email: "user1@seed.com",
-      password: "123456",
+      password: "$2b$10$oqUUOWOmwWPdw8aE2AThrO0jTrGCxtt7cM2A9zUSh5TwPvMjA4E9G",
       mobile_number: "1111111111",
     },
     {
@@ -23,7 +25,7 @@ exports.seed = async function (knex) {
       first_name: "user2",
       last_name: "test",
       email: "user2@seed.com",
-      password: "123456",
+      password: "$2b$10$oqUUOWOmwWPdw8aE2AThrO0jTrGCxtt7cM2A9zUSh5TwPvMjA4E9G",
       mobile_number: "2222222222",
     },
   ]);

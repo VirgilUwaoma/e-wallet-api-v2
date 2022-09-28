@@ -48,4 +48,39 @@ const withdrawTrx = async function (transaction) {
     });
 };
 
-module.exports = { fundTrx, withdrawTrx };
+const transferTrx = async function (transaction) {
+  return knex
+    .transaction(function (trx) {
+      knex("transaction")
+        .insert(transaction)
+        .transacting(trx)
+        .then(function () {
+          console.log("UPDATING SENDER");
+          return knex("wallet")
+            .where("user_id", transaction.sender_id)
+            .update({
+              balance: knex.raw("?? - ?", ["balance", transaction.amount]),
+            })
+            .transacting(trx);
+        })
+        .then(function () {
+          return knex("wallet")
+            .where("user_id", transaction.receiver_id)
+            .update({
+              balance: knex.raw("?? + ?", ["balance", transaction.amount]),
+            })
+            .transacting(trx);
+        })
+        .then(trx.commit)
+        .catch(trx.rollback);
+    })
+    .then(function () {
+      return true;
+    })
+    .catch(function (error) {
+      console.error(error);
+      return false;
+    });
+};
+
+module.exports = { fundTrx, withdrawTrx, transferTrx };

@@ -19,9 +19,24 @@ function loginUserValidation(data) {
   return schema.validate(data);
 }
 
-function fundWalletValidation(data) {
+function debitValidation(data) {
   const schema = Joi.object({
     amount: Joi.number().min(0).precision(2).positive().required(),
+  });
+  return schema.validate(data);
+}
+
+function creditValidation(data) {
+  const schema = Joi.object({
+    amount: Joi.number().min(0).precision(2).positive().required(),
+  });
+  return schema.validate(data);
+}
+
+function transferValidation(data) {
+  const schema = Joi.object({
+    amount: Joi.number().min(0).precision(2).positive().required(),
+    receiver: Joi.string().min(10).required(),
   });
   return schema.validate(data);
 }
@@ -29,5 +44,7 @@ function fundWalletValidation(data) {
 module.exports = {
   registerUserValidation,
   loginUserValidation,
-  fundWalletValidation,
+  debitValidation,
+  creditValidation,
+  transferValidation,
 };
