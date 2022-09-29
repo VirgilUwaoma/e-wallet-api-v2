@@ -1,10 +1,6 @@
+const path = require("path");
+require("dotenv").config({ path: path.resolve(__dirname, "../.env") });
 const knex = require("knex");
 const knexfile = require("./knexfile");
-const { Model } = require("objection");
 
-function setupDb() {
-  const db = knex(knexfile.development);
-  Model.knex(db);
-}
-
-module.exports = knex(knexfile.development);
+module.exports = knex(knexfile[process.env.NODE_ENV]);

@@ -6,6 +6,9 @@
   "author": "",
   "license": "ISC",
   "description": "",
+  "engines": {
+    "node": "16.16.0"
+  },
   "scripts": {
     "start": "nodemon server.js",
     "migrate": " npx knex migrate:latest --knexfile ./database/knexfile.js",
