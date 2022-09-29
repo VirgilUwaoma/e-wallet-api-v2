@@ -10,7 +10,7 @@
     "node": "16.16.0"
   },
   "scripts": {
-    "start": "nodemon server.js",
+    "start": "node server.js",
     "migrate": " npx knex migrate:latest --knexfile ./database/knexfile.js",
     "rollback": " npx knex migrate:rollback --knexfile ./database/knexfile.js",
     "make-seed": " npx knex seed:make dev --knexfile ./database/knexfile.js",
