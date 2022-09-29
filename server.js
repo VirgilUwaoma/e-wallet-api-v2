@@ -14,10 +14,14 @@ const limiter = rateLimit({
 });
 const authRoutes = require("./routes/auth");
 const walletRoutes = require("./routes/wallets");
+const transactionRoutes = require("./routes/transactions");
+const userRoutes = require("./routes/users");
 
 server.use(express.json());
 server.use("/api/auth", authRoutes);
 server.use("/api/wallets", walletRoutes);
+server.use("/api/transactions", transactionRoutes);
+server.use("/api/users", userRoutes);
 server.use(helmet());
 server.use(limiter);
 

@@ -14,4 +14,9 @@ const getWalletByMobile = async function (mobile_number) {
   return wallet[0];
 };
 
-module.exports = { getWalletByUserId, getWalletByMobile };
+const getWallets = async function () {
+  wallets = await knex("wallet");
+  return wallets;
+};
+
+module.exports = { getWalletByUserId, getWalletByMobile, getWallets };

@@ -34,8 +34,41 @@ const createUser = async function (newUser, newWallet) {
     });
 };
 
+const getUsers = async function () {
+  const users = await knex("user")
+    .join("wallet", "user.id", "=", "wallet.user_id")
+    .select(
+      "user.id",
+      "user.first_name",
+      "user.last_name",
+      "user.email",
+      "user.mobile_number",
+      "wallet.wallet_id",
+      "wallet.balance"
+    )
+    .orderBy("user.id");
+  return users;
+};
+const getUser = async function (id) {
+  const user = await knex("user")
+    .join("wallet", "user.id", "=", "wallet.user_id")
+    .select(
+      "user.id",
+      "user.first_name",
+      "user.last_name",
+      "user.email",
+      "user.mobile_number",
+      "wallet.wallet_id",
+      "wallet.balance"
+    )
+    .where("user.id", id);
+  return user;
+};
+
 module.exports = {
   getByEmail,
   getByMobile,
   createUser,
+  getUsers,
+  getUser,
 };

@@ -83,4 +83,9 @@ const transferTrx = async function (transaction) {
     });
 };
 
-module.exports = { fundTrx, withdrawTrx, transferTrx };
+const getTrxs = async function () {
+  transactions = await knex("transaction").orderBy("id", "desc");
+  return transactions;
+};
+
+module.exports = { fundTrx, withdrawTrx, transferTrx, getTrxs };

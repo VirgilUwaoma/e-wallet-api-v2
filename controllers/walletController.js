@@ -178,8 +178,13 @@ function transfer(req, res, next) {
   );
 }
 
+async function getWallets(req, res, next) {
+  wallets = await Wallet.getWallets();
+  return res.status(200).json({ wallets: wallets, message: "wallets" });
+}
 module.exports = {
   fundWallet,
   debitWallet,
   transfer,
+  getWallets,
 };
