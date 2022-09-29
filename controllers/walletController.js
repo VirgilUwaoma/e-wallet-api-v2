@@ -2,7 +2,7 @@ const async = require("async");
 const { v4: uuidv4 } = require("uuid");
 const createError = require("http-errors");
 const Wallet = require("../models/Wallet");
-const Transaction = require("../Models/Transaction");
+const Transaction = require("../models/Transaction");
 const {
   debitValidation,
   creditValidation,

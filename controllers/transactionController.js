@@ -1,4 +1,4 @@
-const Transaction = require("../Models/Transaction");
+const Transaction = require("../models/Transaction");
 const createError = require("http-errors");
 
 async function getTrxs(req, res, next) {
