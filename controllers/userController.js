@@ -23,8 +23,9 @@ async function getUser(req, res, next) {
     const user = await User.getUser(req.params.id);
 
     if (user.length == 0) {
-      return res.status(200).json({
-        message: "no users, create one using the /api/auth/register endpoint",
+      return res.status(404).json({
+        message:
+          "user with id doesn't exist, create one using the /api/auth/register endpoint",
       });
     }
     return res.status(200).json({

@@ -22,13 +22,15 @@ function loginUserValidation(data) {
 function debitValidation(data) {
   const schema = Joi.object({
     amount: Joi.number().min(0).precision(2).positive().required(),
+    token: Joi.object().required(),
   });
   return schema.validate(data);
 }
 
 function creditValidation(data) {
   const schema = Joi.object({
-    amount: Joi.number().min(0).precision(2).positive().required(),
+    amount: Joi.number().min(10).precision(2).positive().required(),
+    token: Joi.object().required(),
   });
   return schema.validate(data);
 }
@@ -37,6 +39,14 @@ function transferValidation(data) {
   const schema = Joi.object({
     amount: Joi.number().min(0).precision(2).positive().required(),
     receiver: Joi.string().min(10).required(),
+    token: Joi.object().required(),
+  });
+  return schema.validate(data);
+}
+
+function tokenValidation(data) {
+  const schema = Joi.object({
+    token: Joi.string().required(),
   });
   return schema.validate(data);
 }
@@ -47,4 +57,5 @@ module.exports = {
   debitValidation,
   creditValidation,
   transferValidation,
+  tokenValidation,
 };

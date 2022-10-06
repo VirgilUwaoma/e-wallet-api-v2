@@ -1,6 +1,13 @@
 const path = require("path");
 require("dotenv").config({ path: path.resolve(__dirname, "../.env") });
 const jwt = require("jsonwebtoken");
+const {
+  debitValidation,
+  creditValidation,
+  transferValidation,
+  tokenValidation,
+} = require("../utilities/validation");
+const createError = require("http-errors");
 
 function issueToken(payload) {
   const token = jwt.sign(payload, process.env.SECRET_KEY, { expiresIn: "1h" });
@@ -8,12 +15,15 @@ function issueToken(payload) {
 }
 
 async function verifyToken(req, res, next) {
-  const authToken = req.headers["auth-token"];
-  if (typeof authToken == "undefined")
-    return res.status(403).json({ message: "no authorization token" });
+  const { error } = tokenValidation({ token: req.body.token });
+  if (error) {
+    const message = error.details[0].message;
+    return next(createError(400, `${message}`));
+  }
+  const token = req.body.token;
   try {
-    const token = await jwt.verify(authToken, process.env.SECRET_KEY);
-    req.token = token;
+    const verifiedToken = await jwt.verify(token, process.env.SECRET_KEY);
+    req.body.token = verifiedToken;
   } catch (error) {
     return res.status(403).json({ message: "invalid token" });
   }

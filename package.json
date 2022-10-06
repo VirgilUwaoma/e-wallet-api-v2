@@ -11,6 +11,7 @@
   },
   "scripts": {
     "start": "node server.js",
+    "devstart": "nodemon server.js",
     "migrate": " npx knex migrate:latest --knexfile ./database/knexfile.js",
     "rollback": " npx knex migrate:rollback --knexfile ./database/knexfile.js",
     "make-seed": " npx knex seed:make dev --knexfile ./database/knexfile.js",
@@ -27,7 +28,6 @@
     "jsonwebtoken": "^8.5.1",
     "knex": "^2.3.0",
     "mysql2": "^2.3.3",
-    "npm": "^8.19.2",
     "objection": "^3.0.1",
     "uuid": "^9.0.0"
   }

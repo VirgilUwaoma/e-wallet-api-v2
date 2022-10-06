@@ -2,8 +2,24 @@ const knex = require("../database/db-setup");
 const { v4: uuidv4 } = require("uuid");
 
 const getByEmail = async function (email) {
-  const emails = await knex("user").where("email", email);
+  const emails = await knex("user")
+    .join("wallet", "user.id", "=", "wallet.user_id")
+    .select(
+      "user.id",
+      "user.first_name",
+      "user.last_name",
+      "user.email",
+      "user.password",
+      "user.mobile_number",
+      "wallet.wallet_id",
+      "wallet.balance"
+    )
+    .where("email", email);
   return emails[0];
+};
+const searchByEmail = async function (email) {
+  const mobiles = await knex("user").where("email", email);
+  return mobiles[0];
 };
 
 const getByMobile = async function (mobile_number) {
@@ -26,11 +42,10 @@ const createUser = async function (newUser, newWallet) {
         .catch(trx.rollback);
     })
     .then(function (inserts) {
-      console.log(inserts.length + " new user created");
       return true;
     })
     .catch(function (error) {
-      return error;
+      return false;
     });
 };
 
@@ -71,4 +86,5 @@ module.exports = {
   createUser,
   getUsers,
   getUser,
+  searchByEmail,
 };

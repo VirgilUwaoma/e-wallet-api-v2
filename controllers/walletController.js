@@ -21,15 +21,20 @@ function fundWallet(req, res, next) {
         callback();
       },
       async function () {
-        const wallet = await Wallet.getWalletByUserId(req.token.id);
+        if (req.params.id != req.body.token.id)
+          throw createError(
+            400,
+            `Not authorised to fund this wallet, your user_id is - ${req.body.token.id}`
+          );
+        const wallet = await Wallet.getWalletByUserId(req.params.id);
         if (!wallet) throw createError(409, "user wallet not found");
       },
       async function () {
         const transactionId = uuidv4();
         const transaction = {
           transaction_id: transactionId,
-          sender_id: req.token.id,
-          receiver_id: req.token.id,
+          sender_id: req.params.id,
+          receiver_id: req.params.id,
           amount: req.body.amount,
           transaction_type: "Fund",
           successful: true,
@@ -44,7 +49,7 @@ function fundWallet(req, res, next) {
         return transactionId;
       },
       async function (transactionId) {
-        const wallet = await Wallet.getWalletByUserId(req.token.id);
+        const wallet = await Wallet.getWalletByUserId(req.params.id);
         const { user_id, balance, wallet_id } = wallet;
         return { user_id, wallet_id, balance, transactionId };
       },
@@ -72,7 +77,12 @@ function debitWallet(req, res, next) {
         callback();
       },
       async function () {
-        const wallet = await Wallet.getWalletByUserId(req.token.id);
+        if (req.params.id != req.body.token.id)
+          throw createError(
+            400,
+            `Not authorised to withdraw from this wallet, your user_id is - ${req.body.token.id}`
+          );
+        const wallet = await Wallet.getWalletByUserId(req.params.id);
         if (!wallet) {
           throw createError(409, "user wallet not found");
         }
@@ -84,8 +94,8 @@ function debitWallet(req, res, next) {
         const transactionId = uuidv4();
         const transaction = {
           transaction_id: transactionId,
-          sender_id: req.token.id,
-          receiver_id: req.token.id,
+          sender_id: req.params.id,
+          receiver_id: req.params.id,
           amount: req.body.amount,
           transaction_type: "Withdrawal",
           successful: true,
@@ -100,7 +110,7 @@ function debitWallet(req, res, next) {
         return transactionId;
       },
       async function (transactionId) {
-        const wallet = await Wallet.getWalletByUserId(req.token.id);
+        const wallet = await Wallet.getWalletByUserId(req.params.id);
         const { user_id, balance, wallet_id } = wallet;
         return { user_id, wallet_id, balance, transactionId };
       },
@@ -128,7 +138,12 @@ function transfer(req, res, next) {
         callback();
       },
       async function () {
-        const sender = await Wallet.getWalletByUserId(req.token.id);
+        if (req.params.id != req.body.token.id)
+          throw createError(
+            400,
+            `Not authorised to transfer from this wallet, your user_id is - ${req.body.token.id}`
+          );
+        const sender = await Wallet.getWalletByUserId(req.params.id);
         const receiver = await Wallet.getWalletByMobile(req.body.receiver);
         if (!sender) {
           throw createError(409, "user wallet not found");
@@ -148,7 +163,7 @@ function transfer(req, res, next) {
         const transactionId = uuidv4();
         const transaction = {
           transaction_id: transactionId,
-          sender_id: req.token.id,
+          sender_id: req.params.id,
           receiver_id: receiver.id,
           amount: req.body.amount,
           transaction_type: "Transfer",
@@ -163,7 +178,8 @@ function transfer(req, res, next) {
         return {
           transaction_id: transactionId,
           amount: transaction.amount,
-          receiver: receiver.mobile_number,
+          receiver_name: receiver.first_name,
+          receiver_mobile: receiver.mobile_number,
         };
       },
     ],

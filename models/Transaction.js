@@ -87,5 +87,11 @@ const getTrxs = async function () {
   transactions = await knex("transaction").orderBy("id", "desc");
   return transactions;
 };
+const getUserTrxs = async function (id) {
+  transactions = await knex("transaction")
+    .where("sender_id", id)
+    .orderBy("id", "desc");
+  return transactions;
+};
 
-module.exports = { fundTrx, withdrawTrx, transferTrx, getTrxs };
+module.exports = { fundTrx, withdrawTrx, transferTrx, getTrxs, getUserTrxs };
